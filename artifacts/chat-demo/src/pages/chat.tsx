@@ -97,13 +97,6 @@ export default function ChatPage() {
     );
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     if (textareaRef.current) {
@@ -207,7 +200,6 @@ export default function ChatPage() {
             ref={textareaRef}
             value={input}
             onChange={handleInput}
-            onKeyDown={handleKeyDown}
             placeholder="メッセージを入力"
             disabled={isLoading}
             className="flex-1 bg-gray-100 rounded-2xl py-2.5 px-4 outline-none resize-none max-h-[80px] min-h-[40px] text-[15px] disabled:opacity-50 transition-all border border-transparent focus:border-primary/20 focus:bg-white"
