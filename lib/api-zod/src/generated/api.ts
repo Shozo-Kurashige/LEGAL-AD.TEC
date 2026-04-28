@@ -14,3 +14,20 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Send a user message and receive an AI response
+ * @summary Send a message to the AI
+ */
+export const SendMessageBody = zod.object({
+  messages: zod.array(
+    zod.object({
+      role: zod.enum(["user", "assistant"]),
+      content: zod.string(),
+    }),
+  ),
+});
+
+export const SendMessageResponse = zod.object({
+  message: zod.string(),
+});
