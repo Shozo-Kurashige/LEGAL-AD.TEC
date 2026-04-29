@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "VUmkTXNJBt1F37u7BYNNX"
+uri = "file://ARCHITECTURE.md"
+type = "text"
+title = "アーキテクチャ概要 (ARCHITECTURE.md)"
