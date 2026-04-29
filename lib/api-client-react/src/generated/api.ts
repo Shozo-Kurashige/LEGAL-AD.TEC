@@ -17,6 +17,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AuditLogsResponse,
   ChatRequest,
   ChatResponse,
   ErrorResponse,
@@ -194,3 +195,79 @@ export const useSendMessage = <
 > => {
   return useMutation(getSendMessageMutationOptions(options));
 };
+
+/**
+ * Returns the latest 100 audit log entries in descending order
+ * @summary Get audit logs
+ */
+export const getGetAuditLogsUrl = () => {
+  return `/api/audit-logs`;
+};
+
+export const getAuditLogs = async (
+  options?: RequestInit,
+): Promise<AuditLogsResponse> => {
+  return customFetch<AuditLogsResponse>(getGetAuditLogsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAuditLogsQueryKey = () => {
+  return [`/api/audit-logs`] as const;
+};
+
+export const getGetAuditLogsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAuditLogs>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAuditLogs>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAuditLogsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuditLogs>>> = ({
+    signal,
+  }) => getAuditLogs({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAuditLogs>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAuditLogsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAuditLogs>>
+>;
+export type GetAuditLogsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get audit logs
+ */
+
+export function useGetAuditLogs<
+  TData = Awaited<ReturnType<typeof getAuditLogs>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAuditLogs>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAuditLogsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}

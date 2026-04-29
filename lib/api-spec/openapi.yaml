@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: chat
     description: AI chat operations
+  - name: audit
+    description: Audit log operations
 paths:
   /healthz:
     get:
@@ -51,6 +53,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /audit-logs:
+    get:
+      operationId: getAuditLogs
+      tags: [audit]
+      summary: Get audit logs
+      description: Returns the latest 100 audit log entries in descending order
+      responses:
+        "200":
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditLogsResponse"
 components:
   schemas:
     HealthStatus:
@@ -94,3 +109,40 @@ components:
           type: string
       required:
         - error
+    AuditLogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        sessionId:
+          type: string
+        createdAt:
+          type: string
+        userMessage:
+          type: string
+        aiResponse:
+          type: string
+        nonBenFlag:
+          type: boolean
+        nonBenTrigger:
+          type: string
+        fallbackFlag:
+          type: boolean
+      required:
+        - id
+        - sessionId
+        - createdAt
+        - userMessage
+        - aiResponse
+        - nonBenFlag
+        - nonBenTrigger
+        - fallbackFlag
+    AuditLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLogEntry"
+      required:
+        - logs

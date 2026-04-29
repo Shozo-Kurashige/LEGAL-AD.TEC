@@ -33,3 +33,18 @@ export interface ChatResponse {
 export interface ErrorResponse {
   error: string;
 }
+
+export interface AuditLogEntry {
+  id: string;
+  sessionId: string;
+  createdAt: string;
+  userMessage: string;
+  aiResponse: string;
+  nonBenFlag: boolean;
+  nonBenTrigger: string;
+  fallbackFlag: boolean;
+}
+
+export interface AuditLogsResponse {
+  logs: AuditLogEntry[];
+}

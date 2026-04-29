@@ -31,3 +31,22 @@ export const SendMessageBody = zod.object({
 export const SendMessageResponse = zod.object({
   message: zod.string(),
 });
+
+/**
+ * Returns the latest 100 audit log entries in descending order
+ * @summary Get audit logs
+ */
+export const GetAuditLogsResponse = zod.object({
+  logs: zod.array(
+    zod.object({
+      id: zod.string(),
+      sessionId: zod.string(),
+      createdAt: zod.string(),
+      userMessage: zod.string(),
+      aiResponse: zod.string(),
+      nonBenFlag: zod.boolean(),
+      nonBenTrigger: zod.string(),
+      fallbackFlag: zod.boolean(),
+    }),
+  ),
+});

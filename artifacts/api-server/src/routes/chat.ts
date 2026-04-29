@@ -1,6 +1,7 @@
 import { Router } from "express";
 import OpenAI from "openai";
 import { SendMessageBody } from "@workspace/api-zod";
+import { saveAuditLog, detectNonBen, detectFallback } from "../db/audit.js";
 
 const router = Router();
 
@@ -49,6 +50,9 @@ router.post("/chat", async (req, res) => {
   }
 
   const { messages } = parseResult.data;
+  const sessionId = (req.headers["x-session-id"] as string) || "unknown";
+  const userMessage = messages[messages.length - 1]?.content ?? "";
+  const nonBen = detectNonBen(userMessage);
 
   try {
     const completion = await openai.chat.completions.create({
@@ -65,9 +69,37 @@ router.post("/chat", async (req, res) => {
     });
 
     const reply = completion.choices[0]?.message?.content ?? "申し訳ありません、回答を生成できませんでした。";
+    const fallbackFlag = detectFallback(reply);
+
+    saveAuditLog({
+      sessionId,
+      userMessage,
+      aiResponse: reply,
+      nonBenFlag: nonBen.flag,
+      nonBenTrigger: nonBen.triggers,
+      fallbackFlag,
+    });
+
     res.json({ message: reply });
   } catch (err) {
     req.log.error({ err }, "OpenAI API error");
+
+    const errorReply = "ただいま確認に時間がかかっています。担当者が確認します。";
+    const fallbackFlag = detectFallback(errorReply);
+
+    try {
+      saveAuditLog({
+        sessionId,
+        userMessage,
+        aiResponse: errorReply,
+        nonBenFlag: nonBen.flag,
+        nonBenTrigger: nonBen.triggers,
+        fallbackFlag,
+      });
+    } catch (saveErr) {
+      req.log.error({ saveErr }, "Failed to save audit log on error");
+    }
+
     res.status(500).json({ error: "AI service error" });
   }
 });

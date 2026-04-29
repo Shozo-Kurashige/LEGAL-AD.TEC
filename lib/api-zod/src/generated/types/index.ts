@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./auditLogEntry";
+export * from "./auditLogsResponse";
 export * from "./chatMessage";
 export * from "./chatMessageRole";
 export * from "./chatRequest";

@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useSendMessage } from "@workspace/api-client-react";
-import { Send, User as UserIcon } from "lucide-react";
+import { Send, User as UserIcon, ClipboardList } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useLocation } from "wouter";
 
 type Message = {
   id: string;
@@ -22,6 +23,7 @@ const WELCOME_MESSAGE = `はじめまして。りこんほっとLINEの初期対
 お気持ちを整理するお手伝いをします。詳しい判断は弁護士が行います。`;
 
 export default function ChatPage() {
+  const [, setLocation] = useLocation();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -125,6 +127,14 @@ export default function ChatPage() {
             </div>
             <p className="text-[10px] opacity-90 mt-0.5">AIは法律判断を行わず、相談内容の整理を行います</p>
           </div>
+          <button
+            onClick={() => setLocation("/audit")}
+            className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 transition-colors px-3 py-1.5 rounded-full text-[11px] font-medium border border-white/20"
+            aria-label="監査ログを見る"
+          >
+            <ClipboardList size={13} />
+            監査ログ
+          </button>
         </header>
 
         {/* Chat Area */}
